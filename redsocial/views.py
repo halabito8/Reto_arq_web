@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from redsocial.serializers import PostsSerializer, CitySerializer, PersonSerializer
-from redsocial.models import Posts, City, Person
+from redsocial.models import Posts, Person
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -18,24 +18,6 @@ from rest_framework import status
 # else:
 #     return no_success
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-
-def hacerPost(request):
-    return HttpResponse('<form action="http://192.168.68.137:8000/redsocial/Posts/" method="POST">\
-                <div>\
-                    <label for="text">Texto de post</label>\
-                    <input name="text" id="text" value="text">\
-                </div>\
-                <div>\
-                    <label for="user">usuario</label>\
-                    <input name="user" id="user" value="user">\
-                </div>\
-                <div>\
-                    <button>Send my greetings</button>\
-                </div>\
-                </form>')
-
 class allPosts(APIView):
 
     def get(self, request, format=None):
@@ -51,6 +33,8 @@ class singlePosts(APIView):
         return Response(serializer.data)
     
     def post(self, request, format=None):
+        text = request.data['text']
+        user=request.data['user']
         p = Posts(text=text,user=user)
         p.save()
         query = Posts.objects.get(text=text)

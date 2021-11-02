@@ -19,15 +19,10 @@ class Posts(models.Model):
 
 # Modelos Neo4j
 
-class City(StructuredNode):
-    code = StringProperty(unique_index=True, required=True)
-    name = StringProperty(index=True, default="city")
-
 class Person(StructuredNode):
     name = StringProperty(unique_index=True)
     age = IntegerProperty(index=True, default=0)
 
     # Relations :
-    city = RelationshipTo(City, 'LIVES_IN')
     friends = RelationshipTo('Person','FRIEND')
 
