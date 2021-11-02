@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from redsocial.serializers import PostsSerializer, CitySerializer, PersonSerializer
+from redsocial.serializers import PostsSerializer, PersonSerializer
 from redsocial.models import Posts, Person
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -45,18 +45,12 @@ class singlePosts(APIView):
         return (content)
 
     def delete(self, request, format=None):
+        user=request.data['user']
         p = Posts.objects.filter(user=user)
         for i in p:
             i.delete()
         content = {'post': 'eliminado'}
         return Response(content,status=status.HTTP_200_OK)
-
-class allCities(APIView):
-
-    def get(self, request, format=None):
-        query = City.nodes.all()
-        serializer = CitySerializer(query,many=True)
-        return Response(serializer.data)
 
 class singlePerson(APIView):
 
