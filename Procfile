@@ -1,0 +1,1 @@
+web: gunicorn mordi2.wsgi

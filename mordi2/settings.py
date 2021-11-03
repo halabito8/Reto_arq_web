@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-mepqbg=enfus%58k(@n%t!5=qympv)=&gvyb=!u6+@1-q=hul)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.68.137']
+ALLOWED_HOSTS = ['192.168.68.137','localhost','127.0.0.1']
 
 
 # Application definition
@@ -86,11 +86,15 @@ WSGI_APPLICATION = 'mordi2.wsgi.application'
 DATABASES = {
        'default': {
            'ENGINE': 'djongo',
-           'NAME': 'arq',
+           'NAME': 'Cluster0',
+           'CLIENT':{
+               'host':'mongodb+srv://mongo:admin@cluster0.t6jja.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+           },
        }
    }
 
-NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL','bolt://neo4j:neo4j@localhost:7687')
+NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL','neo4j+s://neo4j:UkEC0YmsgdVyXV9in-uzWcyAl395JW2mFidM7zNNmX8@cc5da952.databases.neo4j.io')
+# NEOMODEL_NEO4J_BOLT_URL = os.environ.get('NEO4J_BOLT_URL','bolt://neo4j:neo4j@localhost:7687')
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_ENCRYPTED_CONNECTION = True

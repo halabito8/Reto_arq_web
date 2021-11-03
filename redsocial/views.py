@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from redsocial.serializers import PostsSerializer, PersonSerializer
 from redsocial.models import Posts, Person
 from rest_framework.response import Response
@@ -28,6 +28,7 @@ class allPosts(APIView):
 class singlePosts(APIView):
 
     def get(self, request, format=None):
+        user=request.data['user']
         p = Posts.objects.filter(user=user)
         serializer = PostsSerializer(p,many=True)
         return Response(serializer.data)
@@ -65,6 +66,9 @@ class singlePerson(APIView):
 class allPerson(APIView):
 
     def get(self, request, format=None):
-        p = Person.nodes.all()
-        serializer = PersonSerializer(p,many=True)
-        return Response(serializer.data)
+        all_persons = Person.nodes.all()
+        # serializer = PersonSerializer(p,many=True)
+        res = []
+        for p in all_persons:
+            res.append({'name':p.name, 'age': p.age})
+        return JsonResponse(res,safe=False)
