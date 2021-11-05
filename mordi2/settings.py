@@ -63,6 +63,15 @@ CORS_ALLOWED_ORIGINS = [
     'https://reto-front.herokuapp.com',
 ]
 
+CORS_ALLOW_HEADERS = (
+        'x-requested-with',
+        'content-type',
+        'accept',
+        'origin',
+        'authorization',
+        'x-csrftoken'
+)
+
 CSRF_TRUSTED_ORIGINS = [
     'https://reto-front.herokuapp.com',
 ]
