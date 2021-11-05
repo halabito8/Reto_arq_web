@@ -63,6 +63,10 @@ CORS_ALLOWED_ORIGINS = [
     'https://reto-front.herokuapp.com',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://reto-front.herokuapp.com',
+]
+
 ROOT_URLCONF = 'mordi2.urls'
 
 TEMPLATES = [
