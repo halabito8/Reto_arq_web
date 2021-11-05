@@ -1,5 +1,6 @@
 asgiref==3.4.1
 Django==3.2.9
+django-cors-headers==3.10.0
 django-neomodel==0.0.7
 djangorestframework==3.12.4
 djongo==1.3.6
