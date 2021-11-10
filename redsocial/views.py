@@ -58,7 +58,7 @@ class singlePerson(APIView):
 
     def get(self, request, format=None):
         name=request.data['name']
-        person = Person.nodes.filter(name__contains=name)
+        person = Person.nodes.filter(name__icontains=name)
         res = []
         for p in person:
             res.append({'name':p.name, 'age': p.age})
