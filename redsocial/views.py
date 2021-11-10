@@ -17,7 +17,6 @@ from rest_framework import status
 #     return success
 # else:
 #     return no_success
-#
 
 class allPosts(APIView):
 
