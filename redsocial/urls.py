@@ -7,4 +7,5 @@ urlpatterns = [
     path('Posts/', views.singlePosts.as_view()),
     path('Persons/', views.singlePerson.as_view()),
     path('Persons/all', views.allPerson.as_view()),
+    path('login/', views.login.as_view()),
 ]
