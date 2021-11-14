@@ -4,6 +4,7 @@ from .models import Posts, Person
 
 class PostsSerializer(serializers.ModelSerializer):
     comments = serializers.ListField(child=serializers.CharField())
+    date = serializers.DateTimeField()
 
     class Meta:
         model = Posts
