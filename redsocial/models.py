@@ -5,17 +5,20 @@ from djongo import models
 
 # Modelos de MongoDB
 class Comments(models.Model):
+    _id = models.ObjectIdField()
     comment = models.CharField(max_length=100)
     user = models.IntegerField()
+    date = models.DateTimeField()
 
-    class Meta:
-        abstract = True
+    # class Meta:
+    #     abstract = True
 
 class Posts(models.Model):
+    _id = models.ObjectIdField()
     text = models.CharField(max_length=100)
     user = models.IntegerField()
 
-    comments = models.EmbeddedField(model_container=Comments, null=True)
+    comments = models.ArrayField(model_container=Comments, null=True)
 
 # Modelos Neo4j
 
