@@ -20,7 +20,6 @@ from neomodel import db
 #     return success
 # else:
 #     return no_success
-#
 
 class login(APIView):
 
