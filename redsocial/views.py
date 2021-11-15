@@ -179,5 +179,5 @@ class friends(APIView):
         p2 = Person.nodes.get_or_none(uid=to)
         if p1 is None or p2 is None:
             return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
-        p1.friends.connect(p2)
+        p1.friends.disconnect(p2)
         return JsonResponse({"relacion":"eliminada"},safe=False)
