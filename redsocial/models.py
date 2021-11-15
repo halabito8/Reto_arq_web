@@ -10,9 +10,6 @@ class Comments(models.Model):
     user = models.IntegerField()
     date = models.DateTimeField()
 
-    # class Meta:
-    #     abstract = True
-
 class Posts(models.Model):
     _id = models.ObjectIdField()
     text = models.CharField(max_length=100)
@@ -23,8 +20,10 @@ class Posts(models.Model):
 # Modelos Neo4j
 
 class Person(StructuredNode):
+    _id = UniqueIdProperty()
     name = StringProperty(unique_index=True)
     age = IntegerProperty(index=True, default=0)
+    email = StringProperty()
 
     # Relations :
     friends = RelationshipTo('Person','FRIEND')

@@ -1,11 +1,12 @@
 import datetime
 from rest_framework.parsers import JSONParser
 from django.http import HttpResponse, JsonResponse
-from redsocial.serializers import PostsSerializer, PersonSerializer
-from redsocial.models import Posts, Person
+from redsocial.serializers import PostsSerializer, CommentsSerializer
+from redsocial.models import Posts, Person, Comments
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from neomodel import db
 
 # para checar si fue creado 
 # mongo objeto.pk
@@ -35,8 +36,6 @@ class allPosts(APIView):
         query = Posts.objects.all()
         serializer = PostsSerializer(query,many=True)
         return Response(serializer.data)
-        # print(query)
-        # return Response({'hola':'hola'})
 
 class singlePosts(APIView):
 
@@ -66,6 +65,13 @@ class singlePosts(APIView):
         content = {'post': 'eliminado'}
         return Response(content,status=status.HTTP_200_OK)
 
+class allComments(APIView):
+
+    def get(self, request, format=None):
+        query = Comments.objects.all()
+        serializer = CommentsSerializer(query,many=True)
+        return Response(serializer.data)
+
 class singlePerson(APIView):
 
     def get(self, request, format=None):
@@ -90,5 +96,26 @@ class allPerson(APIView):
         all_persons = Person.nodes.all()
         res = []
         for p in all_persons:
+            res.append({'name':p.name, 'age': p.age,'email':p.email})
+        return JsonResponse(res,safe=False)
+
+class friends(APIView):
+
+    def get(self, request, format=None):
+        name=request.data['name']
+        person = Person.nodes.get(name__icontains=name)
+        allfriends = person.friends
+        res = []
+        for p in allfriends:
             res.append({'name':p.name, 'age': p.age, 'id':p.id})
         return JsonResponse(res,safe=False)
+
+    def post(self, request, format=None):
+        _from=request.data['from']
+        to = request.data['to']
+        p1 = Person.nodes.get_or_none(name=_from)
+        p2 = Person.nodes.get_or_none(name=to)
+        if p1 is None or p2 is None:
+            return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
+        p1.friends.connect(p2)
+        return JsonResponse({"relacion":"creada"},safe=False)
