@@ -13,7 +13,7 @@ class Comments(models.Model):
 class Posts(models.Model):
     _id = models.ObjectIdField()
     text = models.CharField(max_length=100)
-    user = models.IntegerField()
+    user = models.CharField()
 
     comments = models.ArrayField(model_container=Comments, null=True)
 
