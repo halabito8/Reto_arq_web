@@ -112,6 +112,19 @@ class singleComment(APIView):
         except Comments.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class feed(APIView):
+
+    def get(self, request, format=None):
+        id=request.data['id']
+        person = Person.nodes.get(uid=id)
+        allfriends = person.friends
+        res = []
+        for p in allfriends:
+            res.append(p.uid)
+        feed = Posts.objects.filter(user__in=res)
+        serializer = PostsSerializer(feed,many=True)
+        return Response(serializer.data)
+
 
 class singlePerson(APIView):
 
@@ -181,3 +194,14 @@ class friends(APIView):
             return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
         p1.friends.disconnect(p2)
         return JsonResponse({"relacion":"eliminada"},safe=False)
+
+class followers(APIView):
+
+    def get(self, request, format=None):
+        id=request.data['id']
+        person = Person.nodes.get(uid=id)
+        allfollowers = person.followers
+        res = []
+        for p in allfollowers:
+            res.append({'name':p.name, 'age': p.age, 'id':p.uid})
+        return JsonResponse(res,safe=False)

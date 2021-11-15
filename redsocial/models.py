@@ -1,4 +1,4 @@
-from neomodel import StructuredNode, StringProperty, IntegerProperty,UniqueIdProperty, RelationshipTo
+from neomodel import StructuredNode, StringProperty, IntegerProperty,UniqueIdProperty, RelationshipTo, RelationshipFrom
 from djongo import models
 
 # Create your models here.
@@ -27,4 +27,5 @@ class Person(StructuredNode):
 
     # Relations :
     friends = RelationshipTo('Person','FRIEND')
+    followers = RelationshipFrom('Person', 'FRIEND')
 
