@@ -170,3 +170,14 @@ class friends(APIView):
             return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
         p1.friends.connect(p2)
         return JsonResponse({"relacion":"creada"},safe=False)
+
+
+    def delete(self, request, format=None):
+        _from=request.data['from']
+        to = request.data['to']
+        p1 = Person.nodes.get_or_none(uid=_from)
+        p2 = Person.nodes.get_or_none(uid=to)
+        if p1 is None or p2 is None:
+            return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
+        p1.friends.connect(p2)
+        return JsonResponse({"relacion":"eliminada"},safe=False)
