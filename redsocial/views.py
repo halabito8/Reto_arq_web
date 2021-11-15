@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from neomodel import db
+from bson import ObjectId
 
 # para checar si fue creado 
 # mongo objeto.pk
@@ -25,8 +26,9 @@ class login(APIView):
 
     def post(self, request, format=None):
         name = request.data["user"]
-        search = Person.nodes.get(name=name)
-        print(search)
+        search = Person.nodes.get_or_none(name=name)
+        if search is None:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         return Response({"status": "ok"},status=status.HTTP_200_OK)
 
 class allPosts(APIView):
@@ -49,18 +51,26 @@ class singlePosts(APIView):
         user=request.data['user']
         p = Posts(text=text,user=user)
         p.save()
-        query = Posts.objects.get(text=text)
-        if (query):
+        try:
+            from_db = Posts.objects.get(pk=p.pk)
             content = {'post': 'creado'}
             return Response(content,status=status.HTTP_200_OK)
-        content = {'post': 'no creado'}
-        return (content)
+        except Posts.DoesNotExist:
+            content = {'post': 'no creado'}
+            return Response(content,status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, format=None):
+        id=request.data['id']
+        p = Posts.objects.get(_id=ObjectId(id))
+        p.text = request.data['text']
+        p.save()
+        content = {'post': 'modificado'}
+        return Response(content,status=status.HTTP_200_OK)
 
     def delete(self, request, format=None):
-        user=request.data['user']
-        p = Posts.objects.filter(user=user)
-        for i in p:
-            i.delete()
+        id=request.data['id']
+        p = Posts.objects.get(_id=ObjectId(id))
+        p.delete()
         content = {'post': 'eliminado'}
         return Response(content,status=status.HTTP_200_OK)
 
@@ -70,6 +80,37 @@ class allComments(APIView):
         query = Comments.objects.all()
         serializer = CommentsSerializer(query,many=True)
         return Response(serializer.data)
+    
+class singleComment(APIView):
+
+    def post(self, request, format=None):
+        userId=request.data['userId']
+        comment=request.data['comment']
+        postId = request.data['postId']
+        p = Posts.objects.get(_id=ObjectId(postId))
+        newComment = Comments(user=userId,comment=comment)
+        newComment.save()
+        try:
+            from_db = Comments.objects.get(pk=newComment.pk)
+            content = {'comentario': 'creado'}
+            com = p.comments
+            if com is None:
+                com = [{'_id':newComment._id,
+                        'comment':newComment.comment,
+                        'user':newComment.user,
+                        'date':datetime.datetime.now()}]
+            else:
+                com.append({'_id':newComment._id,
+                            'comment':newComment.comment,
+                            'user':newComment.user,
+                            'date':datetime.datetime.now()})
+            p.comments = com
+            p.save()
+            return Response(content,status=status.HTTP_200_OK)
+        except Comments.DoesNotExist:
+            content = {'comentario': 'no creado'}
+            return Response(content,status=status.HTTP_400_BAD_REQUEST)
+
 
 class singlePerson(APIView):
 
