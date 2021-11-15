@@ -89,7 +89,9 @@ class singleComment(APIView):
         comment=request.data['comment']
         postId = request.data['postId']
         p = Posts.objects.get(_id=ObjectId(postId))
-        newComment = Comments(user=userId,comment=comment)
+        newComment = Comments(user=userId,
+                              comment=comment,
+                              date=datetime.datetime.now())
         newComment.save()
         try:
             from_db = Comments.objects.get(pk=newComment.pk)
@@ -109,11 +111,28 @@ class singleComment(APIView):
             p.save()
             return Response(content,status=status.HTTP_200_OK)
         except Comments.DoesNotExist:
-            content = {'comentario': 'no creado'}
-            return Response(content,status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class singlePerson(APIView):
+
+    def get(self, request, format=None):
+        id=request.data['id']
+        person = Person.nodes.get_or_none(uid=id)
+        if person is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'name':p.name, 'age': p.age, 'email'p.email},safe=False,status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        name=request.data['name']
+        age=request.data['age']
+        email=request.data['email']
+        p = Person(name=name,age=age,email=email)
+        p.save()
+        content = {'Persona': 'creada'}
+        return Response(content,status=status.HTTP_200_OK)
+
+class searchPersons(APIView):
 
     def get(self, request, format=None):
         name=request.data['name']
@@ -123,39 +142,31 @@ class singlePerson(APIView):
             res.append({'name':p.name, 'age': p.age})
         return JsonResponse(res,safe=False)
 
-    def post(self, request, format=None):
-        name=request.data['name']
-        age=request.data['age']
-        p = Person(name=name,age=age)
-        p.save()
-        content = {'Persona': 'creada'}
-        return Response(content,status=status.HTTP_200_OK)
-
 class allPerson(APIView):
 
     def get(self, request, format=None):
         all_persons = Person.nodes.all()
         res = []
         for p in all_persons:
-            res.append({'name':p.name, 'age': p.age,'email':p.email})
+            res.append({'name':p.name, 'age': p.age,'email':p.email, 'id':p.uid})
         return JsonResponse(res,safe=False)
 
 class friends(APIView):
 
     def get(self, request, format=None):
-        name=request.data['name']
-        person = Person.nodes.get(name__icontains=name)
+        id=request.data['id']
+        person = Person.nodes.get(uid=id)
         allfriends = person.friends
         res = []
         for p in allfriends:
-            res.append({'name':p.name, 'age': p.age, 'id':p.id})
+            res.append({'name':p.name, 'age': p.age, 'id':p.uid})
         return JsonResponse(res,safe=False)
 
     def post(self, request, format=None):
         _from=request.data['from']
         to = request.data['to']
-        p1 = Person.nodes.get_or_none(name=_from)
-        p2 = Person.nodes.get_or_none(name=to)
+        p1 = Person.nodes.get_or_none(uid=_from)
+        p2 = Person.nodes.get_or_none(uid=to)
         if p1 is None or p2 is None:
             return JsonResponse({"Una de las dos personas":"no existe"},status=status.HTTP_400_BAD_REQUEST)
         p1.friends.connect(p2)

@@ -20,7 +20,7 @@ class Posts(models.Model):
 # Modelos Neo4j
 
 class Person(StructuredNode):
-    _id = UniqueIdProperty()
+    uid = UniqueIdProperty()
     name = StringProperty(unique_index=True)
     age = IntegerProperty(index=True, default=0)
     email = StringProperty()
