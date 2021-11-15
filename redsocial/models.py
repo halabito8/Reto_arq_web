@@ -9,11 +9,13 @@ class Comments(models.Model):
     comment = models.CharField(max_length=100)
     user = models.CharField(max_length=100, default="0")
     date = models.DateTimeField()
+    username = models.CharField(max_length=150)
 
 class Posts(models.Model):
     _id = models.ObjectIdField()
     text = models.CharField(max_length=100)
     user = models.CharField(max_length=100)
+    username = models.CharField(max_length=150)
 
     comments = models.ArrayField(model_container=Comments, null=True)
 

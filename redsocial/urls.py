@@ -14,4 +14,5 @@ urlpatterns = [
     path('friends/', views.friends.as_view()),
     path('followers/', views.followers.as_view()),
     path('login/', views.login.as_view()),
+    path('register/', views.register.as_view()),
 ]

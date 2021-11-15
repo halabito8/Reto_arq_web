@@ -31,6 +31,18 @@ class login(APIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
         return Response({"status": "ok"},status=status.HTTP_200_OK)
 
+class register(APIView):
+
+    def post(self, request, format=None):
+        name=request.data['name']
+        age=request.data['age']
+        email=request.data['email']
+        p = Person(name=name,age=age,email=email)
+        p.save()
+        content = {'Persona': 'creada'}
+        return Response(content,status=status.HTTP_200_OK)
+
+
 class allPosts(APIView):
 
     def get(self, request, format=None):
@@ -48,8 +60,11 @@ class singlePosts(APIView):
     
     def post(self, request, format=None):
         text = request.data['text']
-        user=request.data['user']
-        p = Posts(text=text,user=user)
+        userid=request.data['user']
+        person = Person.nodes.get_or_none(uid=userid)
+        if person is None:
+            return Response({"person_id":"no existe"},status=status.HTTP_400_BAD_REQUEST)
+        p = Posts(text=text,user=userid,username=person.name)
         p.save()
         try:
             from_db = Posts.objects.get(pk=p.pk)
@@ -87,10 +102,14 @@ class singleComment(APIView):
         userId=request.data['userId']
         comment=request.data['comment']
         postId = request.data['postId']
+        person = Person.nodes.get_or_none(uid=userId)
+        if person is None:
+            return Response({"person_id":"no existe"},status=status.HTTP_400_BAD_REQUEST)
         p = Posts.objects.get(_id=ObjectId(postId))
         newComment = Comments(user=userId,
                               comment=comment,
-                              date=datetime.datetime.now())
+                              date=datetime.datetime.now(),
+                              username=person.name)
         newComment.save()
         try:
             from_db = Comments.objects.get(pk=newComment.pk)
@@ -135,14 +154,6 @@ class singlePerson(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'name':p.name, 'age': p.age, 'email':p.email},safe=False,status=status.HTTP_200_OK)
 
-    def post(self, request, format=None):
-        name=request.data['name']
-        age=request.data['age']
-        email=request.data['email']
-        p = Person(name=name,age=age,email=email)
-        p.save()
-        content = {'Persona': 'creada'}
-        return Response(content,status=status.HTTP_200_OK)
 
 class searchPersons(APIView):
 
