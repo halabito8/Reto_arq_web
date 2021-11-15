@@ -7,7 +7,7 @@ from djongo import models
 class Comments(models.Model):
     _id = models.ObjectIdField()
     comment = models.CharField(max_length=100)
-    user = models.IntegerField()
+    user = models.CharField()
     date = models.DateTimeField()
 
 class Posts(models.Model):
