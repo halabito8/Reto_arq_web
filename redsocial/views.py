@@ -120,7 +120,7 @@ class singlePerson(APIView):
         person = Person.nodes.get_or_none(uid=id)
         if person is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'name':p.name, 'age': p.age, 'email'p.email},safe=False,status=status.HTTP_200_OK)
+        return JsonResponse({'name':p.name, 'age': p.age, 'email':p.email},safe=False,status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         name=request.data['name']
