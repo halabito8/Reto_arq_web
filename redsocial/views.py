@@ -30,7 +30,7 @@ class login(APIView):
         search = Person.nodes.get_or_none(name=name)
         if search is None:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        return Response({"status": "ok"},status=status.HTTP_200_OK)
+        return Response({"id": search.uid},status=status.HTTP_200_OK)
 
 class register(APIView):
 
@@ -40,8 +40,7 @@ class register(APIView):
         email=request.data['email']
         p = Person(name=name,age=age,email=email)
         p.save()
-        content = {'Persona': 'creada'}
-        return Response(content,status=status.HTTP_200_OK)
+        return Response({"id":p.uid},status=status.HTTP_200_OK)
 
 
 class allPosts(APIView):
@@ -69,19 +68,16 @@ class singlePosts(APIView):
         p.save()
         try:
             from_db = Posts.objects.get(pk=p.pk)
-            content = {'post': 'creado'}
-            return Response(content,status=status.HTTP_200_OK)
+            return Response({"id":str(p._id)},status=status.HTTP_200_OK)
         except Posts.DoesNotExist:
-            content = {'post': 'no creado'}
-            return Response(content,status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
         id=request.data['id']
         p = Posts.objects.get(_id=ObjectId(id))
         p.text = request.data['text']
         p.save()
-        content = {'post': 'modificado'}
-        return Response(content,status=status.HTTP_200_OK)
+        return Response({"id":str(p._id)},status=status.HTTP_200_OK)
 
     def delete(self, request, format=None):
         id=request.data['id']
@@ -114,7 +110,6 @@ class singleComment(APIView):
         newComment.save()
         try:
             from_db = Comments.objects.get(pk=newComment.pk)
-            content = {'comentario': 'creado'}
             com = p.comments
             if com is None:
                 com = [{'_id':newComment._id,
@@ -128,7 +123,7 @@ class singleComment(APIView):
                             'date':datetime.datetime.now()})
             p.comments = com
             p.save()
-            return Response(content,status=status.HTTP_200_OK)
+            return Response({"id":str(newComment._id)},status=status.HTTP_200_OK)
         except Comments.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -160,10 +155,17 @@ class searchPersons(APIView):
 
     def get(self, request, format=None):
         name=request.data['name']
-        person = Person.nodes.filter(name__icontains=name)
+        user = request.data['userId']
+        person = Person.nodes.get_or_none(uid=user)
+        if person is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        search = Person.nodes.filter(name__icontains=name)
         res = []
-        for p in person:
-            res.append({'name':p.name, 'age': p.age})
+        friendsId = []
+        for p in person.friends:
+            friendsId.append(p.uid)
+        for p in search:
+            res.append({'name':p.name, 'age': p.age, 'follows': True if p.uid in friendsId else False})
         return JsonResponse(res,safe=False)
 
 class allPerson(APIView):
