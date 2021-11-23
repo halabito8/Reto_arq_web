@@ -2,6 +2,13 @@ from rest_framework import serializers
 
 from .models import Posts, Comments
 
+class CommentsSerializer2(serializers.ModelSerializer):
+    date = serializers.DateTimeField()
+
+    class Meta: 
+        model = Comments
+        fields = ['comment','user','username','date']
+
 class CommentsSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField()
 
@@ -10,7 +17,7 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PostsSerializer(serializers.ModelSerializer):
-    comments = serializers.ListField(child=serializers.CharField())
+    comments = CommentsSerializer2(many=True)
     # date = serializers.DateTimeField()
 
     class Meta:

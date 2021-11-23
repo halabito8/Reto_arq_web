@@ -164,7 +164,10 @@ class searchPersons(APIView):
         for p in person.friends:
             friendsId.append(p.uid)
         for p in search:
-            res.append({'name':p.name, 'age': p.age, 'follows': True if p.uid in friendsId else False})
+            res.append({'name':p.name,
+                        'age': p.age,
+                        'follows': True if p.uid in friendsId else False,
+                        'id':p.uid})
         return JsonResponse(res,safe=False)
 
 class allPerson(APIView):
